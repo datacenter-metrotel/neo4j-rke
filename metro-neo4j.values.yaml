@@ -1,0 +1,166 @@
+additionalVolumeMounts: []
+additionalVolumes: []
+clusterDomain: cluster.local
+config:
+  server.config.strict_validation.enabled: 'false'
+env: {}
+fullnameOverride: ''
+image:
+  imagePullPolicy: IfNotPresent
+jvm:
+  additionalJvmArguments: []
+  useNeo4jDefaultJvmArguments: true
+livenessProbe:
+  failureThreshold: 40
+  periodSeconds: 5
+  timeoutSeconds: 10
+logInitialPassword: true
+logging:
+  serverLogsXml: ''
+  userLogsXml: ''
+nameOverride: ''
+neo4j:
+  acceptLicenseAgreement: 'yes'
+  edition: community
+  labels: null
+  name: neo4j-standalone
+  offlineMaintenanceModeEnabled: false
+  password: MyPassword
+  passwordFromSecret: ''
+  resources:
+    cpu: 1000m
+    memory: 2Gi
+nodeSelector: {}
+podSpec:
+  annotations: {}
+  containers: []
+  initContainers: []
+  loadbalancer: include
+  nodeAffinity: {}
+  podAntiAffinity: true
+  priorityClassName: ''
+  serviceAccountName: ''
+  terminationGracePeriodSeconds: 3600
+  tolerations: []
+readinessProbe:
+  failureThreshold: 20
+  periodSeconds: 5
+  timeoutSeconds: 10
+securityContext:
+  fsGroup: 7474
+  fsGroupChangePolicy: Always
+  runAsGroup: 7474
+  runAsNonRoot: true
+  runAsUser: 7474
+services:
+  admin:
+    annotations: {}
+    enabled: true
+    spec:
+      type: ClusterIP
+  default:
+    annotations: {}
+  internals:
+    annotations: {}
+    enabled: false
+  neo4j:
+    annotations: {}
+    cleanup:
+      enabled: true
+      image:
+        digest: ''
+        imagePullPolicy: IfNotPresent
+        registry: docker.io
+        repository: bitnami/kubectl
+        tag: ''
+    enabled: true
+    multiCluster: false
+    ports:
+      backup:
+        enabled: false
+      bolt:
+        enabled: true
+      http:
+        enabled: true
+      https:
+        enabled: true
+    selector:
+      helm.neo4j.com/neo4j.loadbalancer: include
+    spec:
+      type: LoadBalancer
+ssl:
+  bolt:
+    privateKey:
+      secretName: null
+      subPath: null
+    publicCertificate:
+      secretName: null
+      subPath: null
+    revokedCerts:
+      sources: []
+    trustedCerts:
+      sources: []
+  https:
+    privateKey:
+      secretName: null
+      subPath: null
+    publicCertificate:
+      secretName: null
+      subPath: null
+    revokedCerts:
+      sources: []
+    trustedCerts:
+      sources: []
+startupProbe:
+  failureThreshold: 1000
+  periodSeconds: 5
+statefulset:
+  metadata:
+    annotations: null
+volumes:
+  backups:
+    mode: share
+    share:
+      name: data
+  data:
+    defaultStorageClass:
+      accessModes:
+        - ReadWriteOnce
+      requests:
+        storage: 10Gi
+    dynamic:
+      accessModes:
+        - ReadWriteOnce
+      requests:
+        storage: 100Gi
+      storageClassName: null
+    mode: defaultStorageClass
+    selector:
+      accessModes:
+        - ReadWriteOnce
+      requests:
+        storage: 100Gi
+      selectorTemplate:
+        matchLabels:
+          app: '{{ .Values.neo4j.name }}'
+          helm.neo4j.com/volume-role: data
+      storageClassName: null
+    volume:
+      setOwnerAndGroupWritableFilePermissions: false
+    volumeClaimTemplate: {}
+  import:
+    mode: share
+    share:
+      name: data
+  licenses:
+    mode: share
+    share:
+      name: data
+  logs:
+    mode: share
+    share:
+      name: data
+  metrics:
+    mode: share
+    share:
+      name: data
