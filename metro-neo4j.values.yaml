@@ -1,8 +1,6 @@
-additionalVolumeMounts: []
-additionalVolumes: []
 clusterDomain: cluster.local
 config:
-  server.config.strict_validation.enabled: 'false'
+  dbms.config.strict_validation: 'false'
 env: {}
 fullnameOverride: ''
 image:
@@ -15,33 +13,29 @@ livenessProbe:
   periodSeconds: 5
   timeoutSeconds: 10
 logInitialPassword: true
-logging:
-  serverLogsXml: ''
-  userLogsXml: ''
 nameOverride: ''
 neo4j:
-  acceptLicenseAgreement: 'yes'
+  acceptLicenseAgreement: 'no'
   edition: community
   labels: null
-  name: neo4j-standalone
+  name: neo4j01
   offlineMaintenanceModeEnabled: false
-  password: MyPassword
-  passwordFromSecret: ''
+  password: Chacabuco271
   resources:
     cpu: 1000m
     memory: 2Gi
-nodeSelector: {}
+nodeSelector: null
 podSpec:
-  annotations: {}
+  annotations: null
   containers: []
   initContainers: []
   loadbalancer: include
-  nodeAffinity: {}
+  nodeAffinity: null
   podAntiAffinity: true
   priorityClassName: ''
   serviceAccountName: ''
   terminationGracePeriodSeconds: 3600
-  tolerations: []
+  tolerations: null
 readinessProbe:
   failureThreshold: 20
   periodSeconds: 5
@@ -65,16 +59,7 @@ services:
     enabled: false
   neo4j:
     annotations: {}
-    cleanup:
-      enabled: true
-      image:
-        digest: ''
-        imagePullPolicy: IfNotPresent
-        registry: docker.io
-        repository: bitnami/kubectl
-        tag: ''
     enabled: true
-    multiCluster: false
     ports:
       backup:
         enabled: false
@@ -84,10 +69,8 @@ services:
         enabled: true
       https:
         enabled: true
-    selector:
-      helm.neo4j.com/neo4j.loadbalancer: include
     spec:
-      type: LoadBalancer
+      type: ClusterIP
 ssl:
   bolt:
     privateKey:
@@ -123,31 +106,10 @@ volumes:
     share:
       name: data
   data:
-    defaultStorageClass:
-      accessModes:
-        - ReadWriteOnce
-      requests:
-        storage: 10Gi
-    dynamic:
-      accessModes:
-        - ReadWriteOnce
-      requests:
-        storage: 100Gi
-      storageClassName: null
-    mode: defaultStorageClass
-    selector:
-      accessModes:
-        - ReadWriteOnce
-      requests:
-        storage: 100Gi
-      selectorTemplate:
-        matchLabels:
-          app: '{{ .Values.neo4j.name }}'
-          helm.neo4j.com/volume-role: data
-      storageClassName: null
+    mode: "volume"
     volume:
-      setOwnerAndGroupWritableFilePermissions: false
-    volumeClaimTemplate: {}
+      persistentVolumeClaim:
+        claimName: neo4j-pvc
   import:
     mode: share
     share:
